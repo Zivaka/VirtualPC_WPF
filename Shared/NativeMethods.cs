@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Shared
 {
-    static class NativeMethods
+    public static class NativeMethods
     {
         /// <summary>
         /// Retrieves a handle to the top-level window whose class name and window name match 
