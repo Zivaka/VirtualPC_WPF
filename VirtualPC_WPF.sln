@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualPC_WPF", "VirtualPC_WPF\VirtualPC_WPF.csproj", "{E9DF1235-860C-4E4C-9FBC-C63893E21341}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualFileSystem", "VirtualFileSystem\VirtualFileSystem.csproj", "{E64D9642-4F22-47C4-A5A0-55DE46E26221}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileExplorer", "FileExplorer\FileExplorer.csproj", "{4E2170A3-77D8-4BC2-BE7D-9CD12A972A98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{E9DF1235-860C-4E4C-9FBC-C63893E21341}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9DF1235-860C-4E4C-9FBC-C63893E21341}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9DF1235-860C-4E4C-9FBC-C63893E21341}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E64D9642-4F22-47C4-A5A0-55DE46E26221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E64D9642-4F22-47C4-A5A0-55DE46E26221}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E64D9642-4F22-47C4-A5A0-55DE46E26221}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E64D9642-4F22-47C4-A5A0-55DE46E26221}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E2170A3-77D8-4BC2-BE7D-9CD12A972A98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E2170A3-77D8-4BC2-BE7D-9CD12A972A98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E2170A3-77D8-4BC2-BE7D-9CD12A972A98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E2170A3-77D8-4BC2-BE7D-9CD12A972A98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
