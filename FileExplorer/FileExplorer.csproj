@@ -78,13 +78,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\back_e.ico" />
-    <Content Include="Resources\back_ne.ico" />
-    <Content Include="Resources\Icon1.ico" />
-    <Content Include="Resources\next_e.ico" />
-    <Content Include="Resources\next_ne.ico" />
+    <Content Include="Resources\back.ico" />
+    <Content Include="Resources\up.ico" />
+    <Content Include="Resources\next.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj">
+      <Project>{9e8c4be3-3bc0-40c3-b395-100d8bf415bf}</Project>
+      <Name>Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VirtualFileSystem\VirtualFileSystem.csproj">
       <Project>{E64D9642-4F22-47C4-A5A0-55DE46E26221}</Project>
       <Name>VirtualFileSystem</Name>
