@@ -40,7 +40,7 @@ namespace VirtualFileSystem
             _fileInfoFactory = new VirtualFileInfoFactory(this);
             _directoryInfoFactory = new VirtualDirectoryInfoFactory(this);
             _driveInfoFactory = new VirtualDriveInfoFactory(this);
-
+            
             if (files != null)
             {
                 foreach (var entry in files)

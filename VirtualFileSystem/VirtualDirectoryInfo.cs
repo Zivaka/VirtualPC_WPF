@@ -22,12 +22,7 @@ namespace VirtualFileSystem
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="VirtualFileDataAccessor"/> or <paramref name="directoryPath"/> is <see langref="null"/>.</exception>
         public VirtualDirectoryInfo(IVirtualFileDataAccessor VirtualFileDataAccessor, string directoryPath)
         {
-            if (VirtualFileDataAccessor == null)
-            {
-                throw new ArgumentNullException("VirtualFileDataAccessor");
-            }
-
-            this.VirtualFileDataAccessor = VirtualFileDataAccessor;
+            this.VirtualFileDataAccessor = VirtualFileDataAccessor ?? throw new ArgumentNullException("VirtualFileDataAccessor");
 
             directoryPath = VirtualFileDataAccessor.Path.GetFullPath(directoryPath);
 

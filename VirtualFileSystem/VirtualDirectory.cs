@@ -22,13 +22,8 @@ namespace VirtualFileSystem
 
         public VirtualDirectory(IVirtualFileDataAccessor VirtualFileDataAccessor, FileBase fileBase, string currentDirectory)
         {
-            if (VirtualFileDataAccessor == null)
-            {
-                throw new ArgumentNullException("VirtualFileDataAccessor");
-            }
-
             this.currentDirectory = currentDirectory;
-            this.VirtualFileDataAccessor = VirtualFileDataAccessor;
+            this.VirtualFileDataAccessor = VirtualFileDataAccessor ?? throw new ArgumentNullException("VirtualFileDataAccessor");
             this.fileBase = fileBase;
         }
 
