@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualFileSystem", "Virtua
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileExplorer", "FileExplorer\FileExplorer.csproj", "{4E2170A3-77D8-4BC2-BE7D-9CD12A972A98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{9E8C4BE3-3BC0-40C3-B395-100D8BF415BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4E2170A3-77D8-4BC2-BE7D-9CD12A972A98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E2170A3-77D8-4BC2-BE7D-9CD12A972A98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E2170A3-77D8-4BC2-BE7D-9CD12A972A98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E8C4BE3-3BC0-40C3-B395-100D8BF415BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E8C4BE3-3BC0-40C3-B395-100D8BF415BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E8C4BE3-3BC0-40C3-B395-100D8BF415BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E8C4BE3-3BC0-40C3-B395-100D8BF415BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
