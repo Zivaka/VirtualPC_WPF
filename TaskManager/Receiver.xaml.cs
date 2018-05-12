@@ -28,7 +28,7 @@ namespace TaskManager
         {
             InitializeComponent();                
         }
-     
+
         IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (msg == NativeMethods.WM_COPYDATA)

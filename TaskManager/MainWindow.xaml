@@ -3,34 +3,49 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:taskManager="clr-namespace:TaskManager"
         mc:Ignorable="d"
-        Title="" MaxHeight="40" Height="40" Width="1080" Closing="Window_Closing" Background="Black">
+        Title="" MaxHeight="40" Height="40" Width="1080" Closing="Window_Closing" Background="#071D70">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="50"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="40"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
-        <Button Grid.Column="0" Click="WinButton_Click">
-            <Image Source="{Binding Image}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0"/>
+        <Popup>
+            <Button Content="Сlose"></Button>
+        </Popup>
+        <Button Grid.Column="0" Click="WinButton_Click" Background="Transparent" BorderBrush="Transparent">
+            <Image Source="{Binding ImageSource}" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0" />
         </Button>
-        <ItemsControl Grid.Column="1" x:Name="Control">
-           <ItemsPanelTemplate>
-               <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"/>
-           </ItemsPanelTemplate>
+        <ItemsControl Grid.Column="1" Margin="6,0" x:Name="Control" ItemsSource="{Binding Elements, Mode=OneWay}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Button Height="40" Width="40" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" ToolTip="{Binding Name}" Background="Transparent" BorderBrush="Transparent">
+                <DataTemplate DataType="taskManager:TaskBarElement">
+                    <Button Height="40" Width="40" Margin="1,0" Command="{Binding ActivateWindowCmnd}" CommandParameter="{Binding}" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent" BorderBrush="Transparent">
                         <Button.Content>
-                            <Image Source="{Binding ProcessIcon}"/>
-                       </Button.Content>
+                            <Border BorderThickness="0,0,0,3" BorderBrush="#6E84D6">
+                                <Image Source="{Binding ProcessIcon}" Width="24" Height="24" VerticalAlignment="Center"/>
+                            </Border>
+                        </Button.Content>
+                        <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Закрити" Command="{Binding CloseWindowCmnd}" CommandParameter="{Binding}"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
                     </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <TextBlock Foreground="White" TextAlignment="Center" VerticalAlignment="Center" Grid.Column="2" x:Name="LanguageBox"/>
-        <TextBlock Foreground="White" TextAlignment="Center" VerticalAlignment="Center" Grid.Column="3" x:Name="DateTimeBox"/>
+        <Image VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2" x:Name="InternetBox"/>
+        <TextBlock Foreground="White" TextAlignment="Center" VerticalAlignment="Center" Grid.Column="3" x:Name="LanguageBox"/>
+        <TextBlock Foreground="White" TextAlignment="Center" VerticalAlignment="Center" Grid.Column="4" x:Name="DateTimeBox"/>
     </Grid>
 </Window>

@@ -1,89 +1,83 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Drawing;
-using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 using Shared;
-using TaskManager.Annotations;
 
 namespace TaskManager
 {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow 
     {
-        private Receiver _receiver;
+        public ObservableCollection<TaskBarElement> Elements { get; set; } = new ObservableCollection<TaskBarElement>();
 
         public MainWindow()
         {
             InitializeComponent();
-
-            _receiver = new Receiver {MessageReceived = MessageR};
-            _receiver.Show();
-
-
-            var a = new TaskBarElement(@"C:\WINDOWS\system32\notepad.exe");
             Control.Items.Clear();
-            Control.Items.Add(a);
+            DataContext = this;
+
+            new Receiver {MessageReceived = MessageR}.Show();          
         }
 
-        //(bitmap);
-        public BitmapSource Image => new Bitmap(@"C:\Users\Alex-REG\Documents\Scanned Documents\Приветствие программы сканирования.jpg").ToBitmapSource();//System.Drawing.Icon.ExtractAssociatedIcon(@"C:\WINDOWS\system32\notepad.exe")?.ToBitmap().ToBitmapSource();
-
+        public BitmapSource ImageSource => new Bitmap($"{AppDomain.CurrentDomain.BaseDirectory}start.png").ToBitmapSource();
+              
         protected override void OnInitialized(EventArgs e)
         {
-            base.OnInitialized(e);
-            //Taskbar.Hide();
+            base.OnInitialized(e);            
             WindowStyle = WindowStyle.None;
             ResizeMode = ResizeMode.NoResize;
             Width = SystemParameters.PrimaryScreenWidth;
             Topmost = true;
             Left = 0;
             Top = SystemParameters.PrimaryScreenHeight - Height;
-            new DispatcherTimer(new TimeSpan(0, 0, 1), DispatcherPriority.Normal, delegate
+            var unused = new DispatcherTimer(new TimeSpan(0, 0, 1), DispatcherPriority.Normal, delegate
             {
-                DateTimeBox.Text = DateTime.Now.ToLongTimeString() + Environment.NewLine + DateTime.Now.ToShortDateString();
-                //DateTimeBox.ToolTip = DateTime.Now.ToLongDateString();
+                DateTimeBox.Text = DateTime.Now.ToShortTimeString() + Environment.NewLine + DateTime.Now.ToShortDateString();
                 LanguageBox.Text = new CultureInfo(CurrentCultureInfo.GetKeyboardLayoutIdAtTime()).ThreeLetterISOLanguageName.ToUpper();
-            }, this.Dispatcher);
+                InternetBox.Source = new Bitmap($"{AppDomain.CurrentDomain.BaseDirectory}internet_{NativeMethods.IsConnectedToInternet().ToString()}.png").ToBitmapSource();
+                int index = 0;
+                while (index < Elements.Count)
+                {
+                    var process = Elements[index];
+                    if(process == null) continue;
+                    if (process.HasExited)
+                        Elements.RemoveAt(index);
+                    else
+                        index++;
+                }         
+            }, Dispatcher);
+            Taskbar.Hide();
         }
 
-        private void MessageR(string s)
+        private void MessageR(string path)
         {
-            //
+            if (File.Exists(path))
+            {
+                var newTask = new TaskBarElement(path);
+                Elements.Add(newTask);                
+            }
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
+            foreach (var taskBarElement in Elements)         
+                taskBarElement.Close();
+            Taskbar.Show();
             Environment.Exit(0);
         }
 
         private void WinButton_Click(object sender, RoutedEventArgs e)
         {
-            Environment.Exit(0);
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Close();
         }
     }
 }

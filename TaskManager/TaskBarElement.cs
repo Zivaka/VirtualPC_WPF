@@ -8,48 +8,26 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using TaskManager.Annotations;
+using Shared;
 
 namespace TaskManager
 {
     public class TaskBarElement : INotifyPropertyChanged
     {
-        private string _name;
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-                OnPropertyChanged(nameof(Name));
-            }
-        }
+        public string Name { get; set; }
+        public string FullPath { get; set; }  
+        public BitmapSource ProcessIcon { get; set; }
+        public Process ProcessInfo { get; set; }
 
-        private string _fullPath;
-        public string FullPath
-        {
-            get => _fullPath;
-            set
-            {
-                _fullPath = value;
-                OnPropertyChanged(nameof(FullPath));
-            }
-        }
+        public ICommand ActivateWindowCmnd { get; }
+        public ICommand CloseWindowCmnd { get; }
 
-        private BitmapSource _processIcon;
-        public BitmapSource ProcessIcon
-        {
-            get => _processIcon;
-            set
-            {
-                _processIcon = value;
-                OnPropertyChanged(nameof(BitmapSource));
-            }
-        }
+        
 
-
-        public Process ProcessInfo;
+        public bool HasExited => ProcessInfo.HasExited;
 
         public TaskBarElement(string fullPath)
         {
@@ -57,6 +35,14 @@ namespace TaskManager
             Name = Path.GetFileNameWithoutExtension(FullPath);
             if (Path.GetExtension(fullPath) == ".exe")            
                 ProcessIcon = Icon.ExtractAssociatedIcon(fullPath)?.ToBitmap().ToBitmapSource();
+            ProcessInfo = Process.Start(fullPath);
+            ActivateWindowCmnd = new ActivateWindowCommand();
+            CloseWindowCmnd = new CloseWindowCommand();
+        }
+
+        public void Close()
+        {
+            ProcessInfo.Kill();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -65,6 +51,39 @@ namespace TaskManager
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        private class ActivateWindowCommand : ICommand
+        {
+            public bool CanExecute(object parameter) { return true; }
+            public event EventHandler CanExecuteChanged;
+
+            public void Execute(object parameter)
+            {
+                var process = parameter as TaskBarElement;
+                if (process == null || process.HasExited) return;
+                var processHandle = process.ProcessInfo.MainWindowHandle;
+
+                NativeMethods.ShowWindow(processHandle,
+                    NativeMethods.IsMinimised(processHandle)
+                        ? NativeMethods.ShowWindowCommands.Restore
+                        : NativeMethods.ShowWindowCommands.Normal);
+                NativeMethods.SetForegroundWindow(processHandle);
+            }
+        }
+
+        private class CloseWindowCommand : ICommand
+        {
+            public bool CanExecute(object parameter) { return true; }
+            public event EventHandler CanExecuteChanged;
+
+            public void Execute(object parameter)
+            {
+                var process = parameter as TaskBarElement;
+                if (process == null || process.HasExited) return;
+                process.ProcessInfo.CloseMainWindow();
+            }
         }
     }
 
