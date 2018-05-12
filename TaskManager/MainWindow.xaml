@@ -1,0 +1,36 @@
+﻿<Window x:Class="TaskManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="" MaxHeight="40" Height="40" Width="1080" Closing="Window_Closing" Background="Black">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" Click="WinButton_Click">
+            <Image Source="{Binding Image}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0"/>
+        </Button>
+        <ItemsControl Grid.Column="1" x:Name="Control">
+           <ItemsPanelTemplate>
+               <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"/>
+           </ItemsPanelTemplate>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Height="40" Width="40" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" ToolTip="{Binding Name}" Background="Transparent" BorderBrush="Transparent">
+                        <Button.Content>
+                            <Image Source="{Binding ProcessIcon}"/>
+                       </Button.Content>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock Foreground="White" TextAlignment="Center" VerticalAlignment="Center" Grid.Column="2" x:Name="LanguageBox"/>
+        <TextBlock Foreground="White" TextAlignment="Center" VerticalAlignment="Center" Grid.Column="3" x:Name="DateTimeBox"/>
+    </Grid>
+</Window>
