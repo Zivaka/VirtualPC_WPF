@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Shared
 {
@@ -167,5 +164,8 @@ namespace Shared
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool ChangeWindowMessageFilterEx(IntPtr hWnd, uint msg,
         ChangeWindowMessageFilterExAction action, ref CHANGEFILTERSTRUCT changeInfo);
+
+        [DllImport("user32.dll")]
+        public static extern int ShowWindow(int hwnd, int command);
     }
 }
