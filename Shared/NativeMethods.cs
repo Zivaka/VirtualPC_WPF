@@ -129,6 +129,15 @@ namespace Shared
             DisAllow = 2
         }
 
+        public enum ShowWindowCommands : int
+        {
+            Hide = 0,
+            Normal = 5,
+            Minimized = 6,
+            Maximized = 3,
+            Restore = 9
+        }
+
         /// <summary>
         /// Contains extended result information obtained by calling 
         /// the ChangeWindowMessageFilterEx function.
@@ -166,6 +175,49 @@ namespace Shared
         ChangeWindowMessageFilterExAction action, ref CHANGEFILTERSTRUCT changeInfo);
 
         [DllImport("user32.dll")]
-        public static extern int ShowWindow(int hwnd, int command);
+        public static extern int ShowWindow(IntPtr hwnd, ShowWindowCommands command);
+
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        public static bool IsMinimised(IntPtr hWnd)
+        {
+            var style = NativeMethods.GetWindowLong(hWnd, -16);
+            if ((style & 0x20000000L) == 0x20000000L) return true;
+            return false;
+        }
+
+        public static bool IsMinimiseBoxed(IntPtr hWnd)
+        {
+            var style = NativeMethods.GetWindowLong(hWnd, -16);
+            if ((style & 0x00020000L) == 0x00020000L) return true;
+            return false;
+        }
+
+        public static bool IsMaximixed(IntPtr hWnd)
+        {
+            var style = NativeMethods.GetWindowLong(hWnd, -16);
+            if ((style & 0x01000000L) == 0x01000000L) return true;
+            return false;
+        }
+
+        public static bool IsMaximixeBoxed(IntPtr hWnd)
+        {
+            var style = NativeMethods.GetWindowLong(hWnd, -16);
+            if ((style & 0x00010000L) == 0x00010000L) return true;
+            return false;
+        }
+
+
+        [DllImport("wininet.dll")]
+        public static extern bool InternetGetConnectedState(out int description, int reservedValue);
+
+        public static bool IsConnectedToInternet()
+        {
+            return InternetGetConnectedState(out var description, 0);
+        }
     }
 }
