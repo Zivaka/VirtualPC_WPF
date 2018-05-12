@@ -190,13 +190,6 @@ namespace Shared
             return false;
         }
 
-        public static bool IsMinimiseBoxed(IntPtr hWnd)
-        {
-            var style = NativeMethods.GetWindowLong(hWnd, -16);
-            if ((style & 0x00020000L) == 0x00020000L) return true;
-            return false;
-        }
-
         public static bool IsMaximixed(IntPtr hWnd)
         {
             var style = NativeMethods.GetWindowLong(hWnd, -16);
@@ -204,13 +197,13 @@ namespace Shared
             return false;
         }
 
-        public static bool IsMaximixeBoxed(IntPtr hWnd)
-        {
-            var style = NativeMethods.GetWindowLong(hWnd, -16);
-            if ((style & 0x00010000L) == 0x00010000L) return true;
-            return false;
-        }
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
 
+        public static bool SendBack(IntPtr hWnd)
+        {
+            return SetWindowPos(hWnd, new IntPtr(1), 0, 0, 0, 0, 0x3);
+        }
 
         [DllImport("wininet.dll")]
         public static extern bool InternetGetConnectedState(out int description, int reservedValue);

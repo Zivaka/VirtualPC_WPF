@@ -18,6 +18,7 @@ namespace TaskManager
     public partial class MainWindow 
     {
         public ObservableCollection<TaskBarElement> Elements { get; set; } = new ObservableCollection<TaskBarElement>();
+        public BitmapSource ImageSource => new Bitmap($"{AppDomain.CurrentDomain.BaseDirectory}start.png").ToBitmapSource();
 
         public MainWindow()
         {
@@ -25,10 +26,9 @@ namespace TaskManager
             Control.Items.Clear();
             DataContext = this;
 
-            new Receiver {MessageReceived = MessageR}.Show();          
+            new Receiver {MessageReceived = MessageR}.Show();        
         }
 
-        public BitmapSource ImageSource => new Bitmap($"{AppDomain.CurrentDomain.BaseDirectory}start.png").ToBitmapSource();
               
         protected override void OnInitialized(EventArgs e)
         {

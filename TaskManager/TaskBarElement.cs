@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using TaskManager.Annotations;
@@ -24,9 +19,7 @@ namespace TaskManager
 
         public ICommand ActivateWindowCmnd { get; }
         public ICommand CloseWindowCmnd { get; }
-
-        
-
+      
         public bool HasExited => ProcessInfo.HasExited;
 
         public TaskBarElement(string fullPath)
@@ -68,7 +61,7 @@ namespace TaskManager
                 NativeMethods.ShowWindow(processHandle,
                     NativeMethods.IsMinimised(processHandle)
                         ? NativeMethods.ShowWindowCommands.Restore
-                        : NativeMethods.ShowWindowCommands.Normal);
+                        : NativeMethods.ShowWindowCommands.Minimized);
                 NativeMethods.SetForegroundWindow(processHandle);
             }
         }
@@ -87,15 +80,5 @@ namespace TaskManager
         }
     }
 
-    public static class BitmapConversion
-    {
-        public static BitmapSource ToBitmapSource(this Bitmap source)
-        {
-            return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                source.GetHbitmap(),
-                IntPtr.Zero,
-                Int32Rect.Empty,
-                BitmapSizeOptions.FromEmptyOptions());
-        }
-    }
+    
 }
