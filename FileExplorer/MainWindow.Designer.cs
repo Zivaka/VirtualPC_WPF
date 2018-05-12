@@ -99,7 +99,6 @@
             this.ToolBar.Name = "ToolBar";
             this.ToolBar.Size = new System.Drawing.Size(835, 25);
             this.ToolBar.TabIndex = 5;
-            this.ToolBar.Text = "toolStrip1";
             // 
             // FolderBackButton
             // 

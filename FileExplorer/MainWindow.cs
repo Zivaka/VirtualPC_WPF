@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO.Abstractions;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Shared;
 using VirtualFileSystem;
 
 namespace FileExplorer
@@ -53,9 +55,50 @@ namespace FileExplorer
             else
             {
                 //Open all sellected files
-                MessageBox.Show(@"Sending message to open files...");
+                SendMessage(item.FullName);
             }
         }
+
+        private void SendMessage(string message)
+        {
+            string windowTitle = "{TASKMANAGER 123-321}";
+            // Find the window with the name of the main form
+            IntPtr ptrWnd = NativeMethods.FindWindow(null, windowTitle);
+            if (ptrWnd == IntPtr.Zero)
+            {
+                MessageBox.Show(String.Format("No window found with the title '{0}'.", windowTitle), "SendMessage Demo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                IntPtr ptrCopyData = IntPtr.Zero;
+                try
+                {
+                    // Create the data structure and fill with data
+                    NativeMethods.COPYDATASTRUCT copyData = new NativeMethods.COPYDATASTRUCT();
+                    copyData.dwData = new IntPtr(2);    // Just a number to identify the data type
+                    copyData.cbData = message.Length + 1;  // One extra byte for the \0 character
+                    copyData.lpData = Marshal.StringToHGlobalAnsi(message);
+
+                    // Allocate memory for the data and copy
+                    ptrCopyData = Marshal.AllocCoTaskMem(Marshal.SizeOf(copyData));
+                    Marshal.StructureToPtr(copyData, ptrCopyData, false);
+
+                    // Send the message
+                    NativeMethods.SendMessage(ptrWnd, NativeMethods.WM_COPYDATA, IntPtr.Zero, ptrCopyData);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "FileExplorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    // Free the allocated memory after the contol has been returned
+                    if (ptrCopyData != IntPtr.Zero)
+                        Marshal.FreeCoTaskMem(ptrCopyData);
+                }
+            }
+        }
+
 
         private void CurrentPathChanged()
         {
