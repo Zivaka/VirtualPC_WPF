@@ -5,6 +5,8 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace VirtualFileSystem
 {
@@ -48,6 +50,21 @@ namespace VirtualFileSystem
                     AddFile(entry.Key, entry.Value);
                 }
             }
+        }
+
+        public static VirtualFileSystem LoadFromFile(string path)
+        {
+            if (!System.IO.File.Exists(path)) return null;
+            IFormatter formatter = new BinaryFormatter();
+            using (Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                 return (VirtualFileSystem)formatter.Deserialize(stream);
+        }
+
+        public void SaveToFile(string path)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
+                formatter.Serialize(stream, this);
         }
 
         public FileBase File => _file;

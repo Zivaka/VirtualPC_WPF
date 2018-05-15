@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -26,35 +28,55 @@ namespace VirtualPC_WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly Process _taskbar;
-        public BitmapSource ImageSource => new Bitmap($"{AppDomain.CurrentDomain.BaseDirectory}image.jpg").ToBitmapSource();
+        private Process _taskbar;
+        public BitmapSource ImageSource => new Bitmap($@"{AppDomain.CurrentDomain.BaseDirectory}images\image.jpg").ToBitmapSource();
         public ObservableCollection<DesktopElement> DesktopElements { get; set; } = new ObservableCollection<DesktopElement>();
 
         public MainWindow()
         {
-            InitializeComponent();
-            DataContext = this;
-            _taskbar = Process.Start(@"E:\!Универ\Дипломная работа\VirtualPC\VirtualPC_WPF\TaskManager\bin\Debug\TaskManager.exe");
+            InitializeComponent();    
 
+            var pcIcon = new Bitmap($@"{AppDomain.CurrentDomain.BaseDirectory}images\pc.png").ToBitmapSource();
             var icon1 = System.Drawing.Icon.ExtractAssociatedIcon(@"C:\windows\system32\notepad.exe")?.ToBitmap().ToBitmapSource();
-            var icon2 = System.Drawing.Icon.ExtractAssociatedIcon(@"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")?.ToBitmap().ToBitmapSource();
+            var icon2 = System.Drawing.Icon.ExtractAssociatedIcon(@"C:\Program Files\Internet Explorer\iexplore.exe")?.ToBitmap().ToBitmapSource();
             var icon3 = System.Drawing.Icon.ExtractAssociatedIcon(@"E:\games\Blizzard App\Battle.net Launcher.exe")?.ToBitmap().ToBitmapSource();
 
-            DesktopElements.Add(new DesktopElement("Notepad", icon1, @"C:\windows\system32\notepad.exe"));
-            DesktopElements.Add(new DesktopElement("Google Chrome", icon2, @"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"));
+            DesktopElements.Add(new DesktopElement("My PC", pcIcon, $"{AppDomain.CurrentDomain.BaseDirectory}FileExplorer.exe"));
+            DesktopElements.Add(new DesktopElement("Нотатки", icon1, @"notepad.exe"));
+            DesktopElements.Add(new DesktopElement("Internet Explorer", icon2, @"C:\Program Files\Internet Explorer\iexplore.exe"));
             DesktopElements.Add(new DesktopElement("Battle.net Launcher", icon3, @"E:\games\Blizzard App\Battle.net Launcher.exe"));
 
-            var unused = new DispatcherTimer(new TimeSpan(0, 0, 1), DispatcherPriority.Normal, delegate
-            {
-                var ptr = NativeMethods.FindWindow(null, "{DESKTOP 123-321}");
-                if(ptr != IntPtr.Zero) NativeMethods.SendBack(ptr);
-                if (_taskbar.HasExited) Close();
-            }, Dispatcher);
+            var eventTimer = new Timer(100);
+            eventTimer.Elapsed += (sender, e) => HandleTimer();
+            eventTimer.Start();
+
+            new WindowSinker(this).Sink();
         }
+
+        private void HandleTimer()
+        {
+            if (_taskbar!=null && _taskbar.HasExited)
+                Dispatcher.Invoke(DispatcherPriority.Normal, new Action(Close));
+        }    
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if(!_taskbar.HasExited) _taskbar.CloseMainWindow();
-        }       
+            
+        }
+
+        private void MainWindow_OnActivated(object sender, EventArgs e)
+        {
+            //var ptr = NativeMethods.FindWindow(null, Title);
+            //var ptr2 = NativeMethods.FindWindow(null, "Program Manager");
+            //if (ptr != IntPtr.Zero) NativeMethods.SetParent(ptr, ptr2);
+        }
+
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _taskbar = Process.Start($"{AppDomain.CurrentDomain.BaseDirectory}TaskManager.exe");
+            //Process.Start(@"E:\!Универ\Дипломная работа\VirtualPC\VirtualPC_WPF\TaskManager\bin\Debug\TaskManager.exe");
+        }
+
     }
 }

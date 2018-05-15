@@ -99,6 +99,7 @@
             this.ToolBar.Name = "ToolBar";
             this.ToolBar.Size = new System.Drawing.Size(835, 25);
             this.ToolBar.TabIndex = 5;
+            this.ToolBar.Resize += new System.EventHandler(this.ToolBar_Resize);
             // 
             // FolderBackButton
             // 
@@ -131,7 +132,7 @@
             // 
             this.UpButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.UpButton.Image = ((System.Drawing.Image)(resources.GetObject("UpButton.Image")));
-            this.UpButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.UpButton.ImageTransparentColor = System.Drawing.Color.White;
             this.UpButton.Name = "UpButton";
             this.UpButton.Size = new System.Drawing.Size(23, 22);
             this.UpButton.Text = "Вгору";
@@ -144,9 +145,10 @@
             // 
             // CurrentFolderPath
             // 
+            this.CurrentFolderPath.AutoSize = false;
             this.CurrentFolderPath.Name = "CurrentFolderPath";
             this.CurrentFolderPath.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
-            this.CurrentFolderPath.Size = new System.Drawing.Size(600, 25);
+            this.CurrentFolderPath.Size = new System.Drawing.Size(700, 25);
             // 
             // ToolBarSeparator3
             // 
@@ -157,10 +159,10 @@
             // 
             this.RefreshButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.RefreshButton.Image = ((System.Drawing.Image)(resources.GetObject("RefreshButton.Image")));
-            this.RefreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.RefreshButton.ImageTransparentColor = System.Drawing.Color.White;
             this.RefreshButton.Name = "RefreshButton";
-            this.RefreshButton.Size = new System.Drawing.Size(23, 22);
-            this.RefreshButton.Text = "Обновити";
+            this.RefreshButton.Size = new System.Drawing.Size(23, 20);
+            this.RefreshButton.Text = "Оновити";
             this.RefreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
             // 
             // StatusBar
@@ -176,8 +178,7 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
             // MainMenu
             // 
@@ -201,8 +202,8 @@
             // ExitMenuItem
             // 
             this.ExitMenuItem.Name = "ExitMenuItem";
-            this.ExitMenuItem.Size = new System.Drawing.Size(120, 22);
-            this.ExitMenuItem.Text = "Закрыть";
+            this.ExitMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.ExitMenuItem.Text = "Закрити вікно";
             this.ExitMenuItem.Click += new System.EventHandler(this.ExitMenuItem_Click);
             // 
             // ViewMenuItem
@@ -457,9 +458,9 @@
             this.Controls.Add(this.StatusBar);
             this.Controls.Add(this.MainMenu);
             this.DoubleBuffered = true;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainWindow";
-            this.ShowIcon = false;
-            this.Text = "Файловий провідник";
+            this.Text = "Провідник";
             this.ToolBar.ResumeLayout(false);
             this.ToolBar.PerformLayout();
             this.StatusBar.ResumeLayout(false);

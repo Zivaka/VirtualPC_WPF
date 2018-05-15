@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.IO.Abstractions;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Shared;
 using VirtualFileSystem;
@@ -24,19 +25,34 @@ namespace FileExplorer
         private List<VirtualDirectoryInfo> _folderHistory = new List<VirtualDirectoryInfo>();
         private int _currentFolderIndex = -1;
 
-        private readonly VirtualFileSystem.VirtualFileSystem _virtualFileSystem;
+        private VirtualFileSystem.VirtualFileSystem _virtualFileSystem;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _virtualFileSystem = VirtualFileSystemGenerator.GenerateFileSystemFromDirectory(@"E:\VS");
+            InitializeVirtualFileSystem();
 
             TreeView.Nodes.Clear();
             var drives = InitializeFileSystemTree(_virtualFileSystem);
             TreeView.Nodes.AddRange(drives.ToArray());
 
             InitializeShellView();
+        }
+
+        private void InitializeVirtualFileSystem()
+        {
+            var virtualFileSystemPath = $"{AppDomain.CurrentDomain.BaseDirectory}{Configurations.FileSystemFileName}";
+            _virtualFileSystem = File.Exists(virtualFileSystemPath)
+                ? VirtualFileSystem.VirtualFileSystem.LoadFromFile(virtualFileSystemPath)
+                : CreateNewVirtualFileSystem(virtualFileSystemPath);
+        }
+
+        private VirtualFileSystem.VirtualFileSystem CreateNewVirtualFileSystem(string path)
+        {
+            var virtualFileSystem = VirtualFileSystemGenerator.GenerateFileSystemFromRealFileSystem();
+            virtualFileSystem.SaveToFile(path);
+            return virtualFileSystem;
         }
 
         private void SelectTreeViewNode(object sender, TreeViewEventArgs e)
@@ -50,56 +66,29 @@ namespace FileExplorer
 
             var currentItem = _shellItemHover ?? ShellView.SelectedItems[0];
             var item = _currentFolderInfos.Find(info => info.Name == currentItem.Text);
-            if (item is VirtualDirectoryInfo)
+            if(item == null) return;
+
+            if (IsFolder(item.FullName))
                 UpdatePath(item.FullName);
             else
             {
                 //Open all sellected files
-                SendMessage(item.FullName);
+                foreach (ListViewItem selectedItem in ShellView.SelectedItems)
+                {
+                    var itemInfo = _currentFolderInfos.Find(info => info.Name == selectedItem.Text);
+                    if (IsFile(itemInfo.FullName))
+                    {
+                        if (PermissionHelper.HavePermissionToOpen(itemInfo.FullName))
+                        {
+                            if (!NativeMethods.SendMessage(Configurations.TaskManagerWindowTitle, itemInfo.FullName))
+                                if (File.Exists(itemInfo.FullName))
+                                    Process.Start(itemInfo.FullName);
+                        }
+                    }                        
+                }               
             }
         }
-
-        private void SendMessage(string message)
-        {
-            string windowTitle = "{TASKMANAGER 123-321}";
-            // Find the window with the name of the main form
-            IntPtr ptrWnd = NativeMethods.FindWindow(null, windowTitle);
-            if (ptrWnd == IntPtr.Zero)
-            {
-                MessageBox.Show(String.Format("No window found with the title '{0}'.", windowTitle), "SendMessage Demo", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                IntPtr ptrCopyData = IntPtr.Zero;
-                try
-                {
-                    // Create the data structure and fill with data
-                    NativeMethods.COPYDATASTRUCT copyData = new NativeMethods.COPYDATASTRUCT();
-                    copyData.dwData = new IntPtr(2);    // Just a number to identify the data type
-                    copyData.cbData = message.Length + 1;  // One extra byte for the \0 character
-                    copyData.lpData = Marshal.StringToHGlobalAnsi(message);
-
-                    // Allocate memory for the data and copy
-                    ptrCopyData = Marshal.AllocCoTaskMem(Marshal.SizeOf(copyData));
-                    Marshal.StructureToPtr(copyData, ptrCopyData, false);
-
-                    // Send the message
-                    NativeMethods.SendMessage(ptrWnd, NativeMethods.WM_COPYDATA, IntPtr.Zero, ptrCopyData);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString(), "FileExplorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    // Free the allocated memory after the contol has been returned
-                    if (ptrCopyData != IntPtr.Zero)
-                        Marshal.FreeCoTaskMem(ptrCopyData);
-                }
-            }
-        }
-
-
+      
         private void CurrentPathChanged()
         {
             var currentFolder = _folderHistory[_currentFolderIndex];
@@ -183,16 +172,20 @@ namespace FileExplorer
 
         private void InitializeShellView()
         {
-            var c1 = new ColumnHeader {Text = @"Название"};//
+            var c1 = new ColumnHeader {Text = @"Название"};
             c1.Width = c1.Width + 80;
-            var c2 = new ColumnHeader { Text = @"Тип"};
+            var c2 = new ColumnHeader {Text = @"Дата створення"};
+            c1.Width = c1.Width + 80;
+            var c3 = new ColumnHeader { Text = @"Тип"};
             c2.Width = c2.Width + 60;
-            var c3 = new ColumnHeader { Text = @"Розмір"};
-            c3.Width = c3.Width + 60;
+            var c4 = new ColumnHeader { Text = @"Розмір"};
+            c4.TextAlign = HorizontalAlignment.Right;
+            c3.Width = c3.Width + 80;
 
             ShellView.Columns.Add(c1);
             ShellView.Columns.Add(c2);
             ShellView.Columns.Add(c3);
+            ShellView.Columns.Add(c4);
 
             ShellView.ColumnClick += ClickOnColumn;          
         }
@@ -203,6 +196,13 @@ namespace FileExplorer
                 ShellView.Sorting = ShellView.Sorting == SortOrder.Descending ? SortOrder.Ascending : SortOrder.Descending;            
         }
 
+        private string SmartSizeConverter(long sizeInByte)
+        {
+            if (sizeInByte < 0) return "";
+            if (sizeInByte < 1024) return $"{sizeInByte}  Б";
+            return $"{sizeInByte / 1024} КБ";
+        }
+
         private void UpdateShellView(VirtualDirectoryInfo currentFolder)
         {
             _currentFolderInfos = currentFolder.GetFileSystemInfos().ToList();
@@ -211,12 +211,19 @@ namespace FileExplorer
             {
                 int type = 0;
                 long size = -1;
+                VirtualFileData fileData = null;
                 if (info is VirtualFileInfo fileInfo)
                 {
                     type = 1;
-                    size = fileInfo.Length;
+                    fileData = _virtualFileSystem.GetFile(fileInfo.FullName);
+                    size = long.Parse(fileData.TextContents);
                 }
-                var itemData = new[] {info.Name, type == 0 ? "Файл" : "Тека", $"{(size != -1 ? $"{size} байт" : "")}"};
+
+                var itemData = new[]
+                {
+                    info.Name, fileData?.CreationTime.ToString("dd.MM.yyyy HH:mm") ?? "", type == 0 ? "Тека" : "Файл", SmartSizeConverter(size)
+                };
+
                 if (ShellView.View == View.Tile) itemData = new[] {info.Name};
                 var item = new ListViewItem(itemData, type);
                 ShellView.Items.Add(item);
@@ -381,12 +388,12 @@ namespace FileExplorer
                 {
                     var pathToRem = JoinPath(CurrentFolderPath.Text, item.Text);
                     if(IsFolder(pathToRem))
-                        new VirtualFileInfo(_virtualFileSystem, pathToRem).Delete();
-                    else
                     {
                         new VirtualDirectoryInfo(_virtualFileSystem, pathToRem).Delete(true);
                         RemoveFolderFromTreeView(pathToRem);
-                    }                      
+                    }                   
+                    else
+                        new VirtualFileInfo(_virtualFileSystem, pathToRem).Delete();
                 }
                 RefreshButton_Click(null, null);
             }            
@@ -481,9 +488,26 @@ namespace FileExplorer
         {
             var currentItem = ShellView.Items[e.Item];
             var newPath = JoinPath(CurrentFolderPath.Text, e.Label);
-            var currentInfo = _currentFolderInfos.FirstOrDefault(info => info.Name == currentItem.Text) as VirtualDirectoryInfo;
-            RenameFolderInTreeView(currentInfo?.FullName, newPath);
-            currentInfo?.MoveTo(newPath);
+            if (_currentFolderInfos.FirstOrDefault(info => info.Name == currentItem.Text) is VirtualDirectoryInfo currentDirectoryInfo)
+            {
+                RenameFolderInTreeView(currentDirectoryInfo.FullName, newPath);
+                _currentFolderInfos.Remove(currentDirectoryInfo);
+                currentDirectoryInfo.MoveTo(newPath);
+                _currentFolderInfos.Add(new VirtualDirectoryInfo(_virtualFileSystem, newPath));
+            }
+
+            if (_currentFolderInfos.FirstOrDefault(info => info.Name == currentItem.Text) is VirtualFileInfo currentFileInfo)
+            {
+                RenameFolderInTreeView(currentFileInfo.FullName, newPath);
+                _currentFolderInfos.Remove(currentFileInfo);
+                currentFileInfo.MoveTo(newPath);
+                _currentFolderInfos.Add(new VirtualFileInfo(_virtualFileSystem, newPath));
+            }
+        }
+
+        private void ToolBar_Resize(object sender, EventArgs e)
+        {
+            CurrentFolderPath.Width = ToolBar.Width - 135; 
         }
     }
 }

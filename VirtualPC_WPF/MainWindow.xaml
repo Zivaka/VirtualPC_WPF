@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VirtualPC_WPF"
         mc:Ignorable="d"
-        Title="{}{DESKTOP 123-321}" Height="450" Width="800" Closing="Window_Closing" WindowState="Maximized" WindowStyle="None" DataContext="">
+        Title="{}{DESKTOP 123-321}" Height="450" Width="800" Closing="Window_Closing" WindowState="Maximized" Activated="MainWindow_OnActivated" Loaded="MainWindow_OnLoaded" WindowStyle="None" DataContext="{Binding RelativeSource={RelativeSource Self}}" ShowInTaskbar="False">
     <Window.Background>
         <ImageBrush ImageSource="{Binding ImageSource}"/>
     </Window.Background>

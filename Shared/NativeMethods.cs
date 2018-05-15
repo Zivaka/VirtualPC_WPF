@@ -132,6 +132,7 @@ namespace Shared
         public enum ShowWindowCommands : int
         {
             Hide = 0,
+            Show = 1,
             Normal = 5,
             Minimized = 6,
             Maximized = 3,
@@ -197,20 +198,46 @@ namespace Shared
             return false;
         }
 
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
-
-        public static bool SendBack(IntPtr hWnd)
-        {
-            return SetWindowPos(hWnd, new IntPtr(1), 0, 0, 0, 0, 0x3);
-        }
-
         [DllImport("wininet.dll")]
         public static extern bool InternetGetConnectedState(out int description, int reservedValue);
 
         public static bool IsConnectedToInternet()
         {
             return InternetGetConnectedState(out var description, 0);
+        }
+
+        public static bool SendMessage(string windowTitle, string message)
+        {
+            IntPtr ptrWnd = FindWindow(null, windowTitle);
+            if (ptrWnd != IntPtr.Zero)
+            {
+                IntPtr ptrCopyData = IntPtr.Zero;
+                try
+                {
+                    COPYDATASTRUCT copyData = new COPYDATASTRUCT
+                    {
+                        dwData = new IntPtr(2),
+                        cbData = message.Length + 1,
+                        lpData = Marshal.StringToHGlobalAnsi(message)
+                    };
+
+                    ptrCopyData = Marshal.AllocCoTaskMem(Marshal.SizeOf(copyData));
+                    Marshal.StructureToPtr(copyData, ptrCopyData, false);
+
+                    SendMessage(ptrWnd, WM_COPYDATA, IntPtr.Zero, ptrCopyData);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+                finally
+                {
+                    if (ptrCopyData != IntPtr.Zero)
+                        Marshal.FreeCoTaskMem(ptrCopyData);
+                }
+            }
+            return false;
         }
     }
 }

@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:taskManager="clr-namespace:TaskManager"
+        xmlns:shared="clr-namespace:Shared;assembly=Shared"
         mc:Ignorable="d"
-        Title="" MaxHeight="40" Height="40" Width="1080" Closing="Window_Closing" Background="#071D70">
+        Title="" Height="{x:Static shared:Configurations.TaskBarWidth}" MaxHeight="{x:Static shared:Configurations.TaskBarWidth}" Width="1080" Closing="Window_Closing" Background="#071D70" ShowInTaskbar="False" DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
@@ -29,7 +30,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="taskManager:TaskBarElement">
-                    <Button Height="40" Width="40" Margin="1,0" Command="{Binding ActivateWindowCmnd}" CommandParameter="{Binding}" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent" BorderBrush="Transparent">
+                    <Button Height="{x:Static shared:Configurations.TaskBarElementSize}" Width="{x:Static shared:Configurations.TaskBarElementSize}" Margin="1,0" Command="{Binding ActivateWindowCmnd}" CommandParameter="{Binding}" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Background="Transparent" BorderBrush="Transparent">
                         <Button.Content>
                             <Border BorderThickness="0,0,0,3" BorderBrush="#6E84D6">
                                 <Image Source="{Binding ProcessIcon}" Width="24" Height="24" VerticalAlignment="Center"/>

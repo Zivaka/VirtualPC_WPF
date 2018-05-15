@@ -30,6 +30,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Dakirby309-Simply-Styled-File-Explorer.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -78,6 +81,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Dakirby309-Simply-Styled-File-Explorer.ico" />
     <Content Include="Resources\back.ico" />
     <Content Include="Resources\up.ico" />
     <Content Include="Resources\next.ico" />
