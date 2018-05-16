@@ -2,9 +2,9 @@
 
 namespace Shared
 {
-    public static class Taskbar
+    public static class Desktop
     {
-        private static IntPtr Handle => NativeMethods.FindWindow("Shell_TrayWnd", "");
+        private static IntPtr Handle => NativeMethods.FindWindow("Progman", "Program Manager");
 
         public static void Show()
         {

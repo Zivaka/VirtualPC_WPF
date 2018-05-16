@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VirtualPC_WPF"
         mc:Ignorable="d"
-        Title="{}{DESKTOP 123-321}" Height="450" Width="800" Closing="Window_Closing" WindowState="Maximized" Activated="MainWindow_OnActivated" Loaded="MainWindow_OnLoaded" WindowStyle="None" DataContext="{Binding RelativeSource={RelativeSource Self}}" ShowInTaskbar="False">
+        Title="{}{DESKTOP 123-321}" Height="450" Width="800" Closing="Window_Closing" WindowState="Maximized" Loaded="MainWindow_OnLoaded" Closed="MainWindow_OnClosed"  WindowStyle="None" DataContext="{Binding RelativeSource={RelativeSource Self}}" ShowInTaskbar="False">
     <Window.Background>
         <ImageBrush ImageSource="{Binding ImageSource}"/>
     </Window.Background>
@@ -22,7 +22,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="local:DesktopElement">
-                    <Button Width="70" Height="90" Background="Transparent" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" BorderBrush="Transparent">
+                    <Button Width="75" Margin="3" Background="Transparent" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" BorderBrush="Transparent">
                         <Button.Content>
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -30,7 +30,7 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Image Grid.Row="0" Source="{Binding Image}"/>
-                                <TextBlock TextAlignment="Center" Grid.Row="1" Text="{Binding Name}" TextWrapping="Wrap" Foreground="AliceBlue">
+                                <TextBlock TextAlignment="Center" Grid.Row="1" Text="{Binding Name}" TextWrapping="WrapWithOverflow" Foreground="AliceBlue">
                                     <TextBlock.Effect>
                                         <DropShadowEffect Color="Black" Opacity="0.75" BlurRadius="5" ShadowDepth="0"/>
                                     </TextBlock.Effect>

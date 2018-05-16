@@ -53,7 +53,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="WindowSinker.cs" />
+    <Compile Include="Hook\HookBase.cs" />
+    <Compile Include="Hook\IHook.cs" />
+    <Compile Include="Hook\HookManager.cs" />
+    <Compile Include="Hook\KeyBoardHook.cs" />
+    <Compile Include="Hook\WindowsCombinationHook.cs" />
+    <Compile Include="Hook\WindowHook.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -11,5 +11,6 @@
 
         public const string FileSystemFileName = "FileSystem.bin";
         public const string PermissionsFileName = "Permission";
+        public const string DesktopInfoFileName = "Desktop";
     }
 }
